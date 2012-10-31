@@ -1,12 +1,13 @@
 #!/usr/bin/python
 import sys
+import time
 
 import serial
 
 port = sys.argv[1]
 filename = sys.argv[2]
 
-ser = serial.Serial(port, 9600, timeout=10, xonxoff=True)
+ser = serial.Serial(port, 9600, timeout=1, xonxoff=True)
 
 print 'Going into upgrade mode'
 while True:
@@ -19,11 +20,12 @@ while True:
 print
 print 'In the bootloader'
 
-data = file(filename).read()
-ser.write(data)
+data = file(filename).readlines()
 
 s = ""
-while s.find('EXIT')<0:
+for l in data:
+    ser.write(l)
+    time.sleep(.1)
     c = ser.read()
     sys.stdout.write(c)
     sys.stdout.flush()
@@ -31,6 +33,8 @@ while s.find('EXIT')<0:
         s = ""
     else:
         s+=c
+    if s.find('EXIT')>0:
+        break;	
 
 print
 print "Complete"
