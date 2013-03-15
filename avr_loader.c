@@ -94,7 +94,11 @@ void boot(void)
     UBRR0L = UBRRL_VALUE;
 
     // Enable receiver and transmitter
-    UCSR0A = (0<<U2X0);
+    #if USE_2X
+    UCSR0A = (1 << U2X0);
+    #else
+    UCSR0A = (0 << U2X0);
+    #endif
     UCSR0B = (1<<RXEN0)|(1<<TXEN0);
 
     // Set frame format: 8 bit, no parity, 1 stop bit,
